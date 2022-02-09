@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager
+import random
 
 
 class UserProfileManager(BaseUserManager):
@@ -13,7 +12,7 @@ class UserProfileManager(BaseUserManager):
             raise ValueError('Users must have an email address')
 
         email = self.normalize_email(email)
-        user = self.model(email=email, name=name,)
+        user = self.model(email=email, name=name, username=name+str(random.randint(5,500)))
 
         user.set_password(password)
         user.save(using=self._db)
@@ -34,6 +33,7 @@ class UserProfileManager(BaseUserManager):
 class UserProfile(AbstractUser):
     """Database model for users in the system"""
     email = models.EmailField(max_length=255, unique=True)
+    username = models.CharField(max_length=40, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
